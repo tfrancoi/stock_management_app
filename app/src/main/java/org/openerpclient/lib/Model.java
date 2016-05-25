@@ -1,5 +1,8 @@
 package org.openerpclient.lib;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Model {
 	private String name;
 	private Service objectService;
@@ -25,6 +28,7 @@ public class Model {
 			params[MIN_ARG_SIZE + i] = methodArgs[i];
 		}
 		try {
+			System.out.println("---------------->"+ params);
 			return this.objectService.call("execute", params);
 		}
 		catch(ConnectorException e) {
@@ -33,7 +37,7 @@ public class Model {
 		}
 	}
 	
-	public int[] search(String domain) {
+	public Object[] search(String domain) {
 		Object objectDomain = this.connection.getConnector().parseDomain(domain);
 		Object result = this.call("search", objectDomain);
 		if(result.getClass().isArray()) {
@@ -42,7 +46,21 @@ public class Model {
 			for(int i = 0; i < ids.length; i++) {
 				ids[i] = (Integer) object_ids[i];
 			}
-			return ids;
+			return object_ids;
+		}
+		return null;
+	}
+
+	public ArrayList<HashMap> read(Object[] ids, String[] fields){
+		Object result = this.call("read", ids, fields);
+
+		ArrayList datas = new ArrayList();
+
+		if(result.getClass().isArray()) {
+			for (int i = 0; i <= (((Object[]) result).length-1); i++) {
+				datas.add(((HashMap) ((Object[]) result)[i]));
+			}
+			return datas;
 		}
 		return null;
 	}
