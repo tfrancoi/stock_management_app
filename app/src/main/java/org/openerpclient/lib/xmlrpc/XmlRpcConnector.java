@@ -5,10 +5,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openerpclient.lib.Connector;
 import org.openerpclient.lib.ConnectorException;
+import org.openerpclient.lib.Service;
 import org.openerpclient.lib.jsonrpc.JSONRPCConnector;
 import org.xmlrpc.android.XMLRPCClient;
 import org.xmlrpc.android.XMLRPCException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 
 public class XmlRpcConnector implements Connector {
@@ -33,21 +37,4 @@ public class XmlRpcConnector implements Connector {
 			throw new ConnectorException(e);
 		}
 	}
-	
-	@Override
-	public Object parseDomain(String domain) {
-		try {
-			JSONArray jsonDomain = new JSONArray(domain);
-			Object ObjectDomain = JSONRPCConnector.fromJson(jsonDomain);
-			return ObjectDomain;
-		}
-		catch(JSONException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	
-	
-
 }

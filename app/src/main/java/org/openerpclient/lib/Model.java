@@ -1,5 +1,12 @@
 package org.openerpclient.lib;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.openerpclient.lib.jsonrpc.JSONRPCConnector;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class Model {
 	private String name;
 	private Service objectService;
@@ -21,7 +28,6 @@ public class Model {
 		params[3] = this.name;
 		params[4] = method;
 		for(int i = 0; i < methodArgs.length; i++) {
-			System.out.println("Model args:" + methodArgs[i]);
 			params[MIN_ARG_SIZE + i] = methodArgs[i];
 		}
 		try {
@@ -34,7 +40,7 @@ public class Model {
 	}
 	
 	public int[] search(String domain) {
-		Object objectDomain = this.connection.getConnector().parseDomain(domain);
+		Object objectDomain = this.parseDomain(domain);
 		Object result = this.call("search", objectDomain);
 		if(result.getClass().isArray()) {
 			Object[] object_ids = (Object[]) result;
@@ -45,5 +51,39 @@ public class Model {
 			return ids;
 		}
 		return null;
+	}
+
+	public ArrayList<HashMap> read(int[] ids, String fields) {
+		Object[] fieldsList = (Object[]) this.parseDomain(fields);
+		Object[] idsList = new Object[ids.length];
+		for(int i = 0; i < ids.length; i++) {
+			idsList[i] = (Object) ids[i];
+		}
+		return read(idsList, fieldsList);
+	}
+
+	public ArrayList<HashMap> read(Object[] ids, Object[] fields) {
+		Object result = this.call("read", ids, fields);
+		ArrayList<HashMap> datas = new ArrayList<HashMap>();
+		if(result.getClass().isArray()) {
+			for (int i = 0; i <= (((Object[]) result).length-1); i++) {
+				datas.add(((HashMap) ((Object[]) result)[i]));
+			}
+			return datas;
+		}
+		return null;
+	}
+
+
+	private Object parseDomain(String domain) {
+		try {
+			JSONArray jsonDomain = new JSONArray(domain);
+			Object ObjectDomain = JSONRPCConnector.fromJson(jsonDomain);
+			return ObjectDomain;
+		}
+		catch(JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

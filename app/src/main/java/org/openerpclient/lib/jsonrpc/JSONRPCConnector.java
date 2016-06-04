@@ -29,22 +29,23 @@ public class JSONRPCConnector implements Connector {
 	}
 
 	/**
-	 * @param 0: Model
-	 * @param 1: Method
-	 * @param 2..n : Method parameter
+	 * @param service: Model
+	 * @param method: Method
+	 * @param args : Method parameter
 	 */
 	public Object call(String service, String method, Object... args) throws ConnectorException {
 		try {
 			System.out.println("Call: " + service + " - " + method);
 			for (Object o : args) {
-				System.out.println(o);
+				System.out.print(o + ", ");
 			}
+			System.out.println("");
 			JSONObject params = new JSONObject();
 			params.put("service", service);
 			params.put("method", method);
 			params.put("args", toJSON(args));
 			Object result = this.client.call("call", params);
-			System.out.println("JSONRPC result " + result + " " + result.getClass().getName());
+			System.out.println("JSONRPC result " + result);
 			
 			if(result instanceof JSONObject || result instanceof JSONArray) {
 				System.out.println("JSON result");
@@ -127,17 +128,6 @@ public class JSONRPCConnector implements Connector {
 			return toMap((JSONObject) json);
 		} else {
 			return json;
-		}
-	}
-	
-	@Override
-	public Object parseDomain(String domain) {
-		try {
-			return new JSONArray(domain);
-		}
-		catch(JSONException e) {
-			e.printStackTrace();
-			return null;
 		}
 	}
 }
